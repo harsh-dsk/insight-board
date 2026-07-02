@@ -11,15 +11,15 @@
  *   - User avatar + dropdown (profile info + logout)
  */
 
-import { Search, Bell, Sun, Moon, Monitor, Menu, LogOut } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Bell, Sun, Moon, Monitor, Menu, LogOut } from 'lucide-react'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 import { useAuth } from '@/context'
 import { useTheme } from '@/context'
 import { ROUTES, THEMES } from '@/constants'
 import { cn } from '@/lib/utils'
 
-import { Input } from '@/components/ui/input'
+
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -97,6 +97,16 @@ function ThemeToggle() {
 export function TopNavbar({ onMenuClick }) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const getPageTitle = () => {
+    const path = location.pathname
+    if (path === ROUTES.DASHBOARD) return 'Dashboard'
+    if (path === ROUTES.PRODUCTS) return 'Products'
+    if (path.startsWith('/products/')) return 'Product Details'
+    if (path === ROUTES.ANALYTICS) return 'Analytics'
+    return 'InsightBoard'
+  }
 
   const handleLogout = () => {
     logout()
@@ -117,17 +127,10 @@ export function TopNavbar({ onMenuClick }) {
         <Menu className="h-4 w-4" />
       </Button>
 
-      {/* ── Search ── */}
-      <div className="relative flex-1 max-w-sm">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-        <Input
-          type="search"
-          placeholder="Search…"
-          className="h-8 pl-8 text-sm bg-muted/50 border-transparent focus-visible:border-border focus-visible:bg-background"
-          disabled
-          aria-label="Search (coming soon)"
-        />
-      </div>
+      {/* ── Page Title ── */}
+      <h2 className="hidden sm:inline-block text-sm font-semibold tracking-tight text-foreground md:text-base">
+        {getPageTitle()}
+      </h2>
 
       {/* ── Right actions ── */}
       <div className="ml-auto flex items-center gap-1">
