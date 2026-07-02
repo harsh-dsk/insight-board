@@ -21,8 +21,6 @@ import { getProductCategories } from '@/services'
 import { ErrorCard } from '@/components/common/ErrorCard'
 import { EmptyState } from '@/components/common/EmptyState'
 
-import { useAuth } from '@/context'
-
 import {
   ProductToolbar,
   ProductTable,
@@ -48,7 +46,6 @@ function GridSkeleton({ count = 12 }) {
 
 export default function Products() {
   const { filters, setFilter, resetFilters } = useProductFilters()
-  const { user } = useAuth()
   const { products, total, isLoading, error, refetch } = useProductsQuery(filters)
 
   // Categories: fetched once, never re-fetched.
@@ -76,23 +73,6 @@ export default function Products() {
       ),
     [categories]
   )
-
-  console.log("========== PRODUCTS DEBUG ==========")
-console.log("Role:", user?.role)
-console.log(
-  "Hidden status of Product #1:",
-  localStorage.getItem("insightboard_product_status_1")
-)
-console.log("Returned Product IDs:", products.map((p) => p.id))
-console.log(
-  "Hidden products still in returned array:",
-  products
-    .filter(
-      (p) =>
-        localStorage.getItem(`insightboard_product_status_${p.id}`) === "hidden"
-    )
-    .map((p) => p.id)
-)
 
   return (
     <div className="space-y-6">
