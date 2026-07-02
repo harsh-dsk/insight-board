@@ -57,7 +57,7 @@ export function MainLayout() {
           <TopNavbar onMenuClick={() => setMobileOpen(true)} />
 
           {/* Scrollable page content */}
-          <ScrollArea className="flex-1">
+          <ScrollArea className="flex-1 min-h-0">
             <main className="p-6">
               <Outlet />
             </main>
