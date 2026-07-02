@@ -5,13 +5,14 @@
  *
  * Route tree:
  *   /                   → Redirect to /dashboard
- *   /login              → Login page (public)
+ *   /login              → Login page (redirects to /dashboard if already authed)
  *   /                   → ProtectedRoute (requires auth)
  *     /                 → MainLayout wrapper
  *       /dashboard      → Dashboard page
  *       /products       → Products listing page
  *       /products/:id   → Product detail page
- *       /analytics      → Analytics page
+ *       /               → AdminRoute (requires admin role)
+ *         /analytics    → Analytics page
  *   *                   → 404 NotFound page
  */
 
@@ -21,6 +22,7 @@ import { ROUTES } from '@/constants'
 // Route guards
 import { ProtectedRoute } from './ProtectedRoute'
 import { AdminRoute } from './AdminRoute'
+import { PublicOnlyRoute } from './PublicOnlyRoute'
 
 // Layouts
 import { MainLayout } from '@/layouts/MainLayout'
@@ -40,9 +42,11 @@ const router = createBrowserRouter([
     element: <Navigate to={ROUTES.DASHBOARD} replace />,
   },
   {
-    // Public route — no auth required
-    path: ROUTES.LOGIN,
-    element: <Login />,
+    // Public-only route — authenticated users are redirected to /dashboard
+    element: <PublicOnlyRoute />,
+    children: [
+      { path: ROUTES.LOGIN, element: <Login /> },
+    ],
   },
   {
     // All authenticated routes nested under ProtectedRoute
@@ -55,7 +59,13 @@ const router = createBrowserRouter([
           { path: ROUTES.DASHBOARD, element: <Dashboard /> },
           { path: ROUTES.PRODUCTS, element: <Products /> },
           { path: ROUTES.PRODUCT_DETAILS, element: <ProductDetails /> },
-          { path: ROUTES.ANALYTICS, element: <Analytics /> },
+          // Analytics is admin-only — non-admins redirected to /dashboard
+          {
+            element: <AdminRoute />,
+            children: [
+              { path: ROUTES.ANALYTICS, element: <Analytics /> },
+            ],
+          },
         ],
       },
     ],

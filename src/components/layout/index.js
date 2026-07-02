@@ -1,7 +1,9 @@
 /**
  * components/layout/index.js
  *
- * Barrel export for layout-specific components (Sidebar, Header, Footer, etc.).
- *
- * TODO: Export <Sidebar />, <Header />, <Footer />, <Breadcrumbs /> as they are built.
+ * Barrel export for layout-specific components.
  */
+
+export { Sidebar } from './Sidebar'
+export { TopNavbar } from './TopNavbar'
+export { MobileDrawer } from './MobileDrawer'

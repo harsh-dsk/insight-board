@@ -4,20 +4,31 @@
  * Provides authentication state and actions to the entire application tree.
  *
  * Exposes via useAuth():
- *   - user          {object|null}  Authenticated user object.
- *   - token         {string|null}  JWT token string.
- *   - isLoading     {boolean}      True while restoring session from storage.
- *   - isAuthenticated {boolean}    Derived: true when token is present.
- *   - login(token, user) {fn}      Persist session and update state.
- *   - logout()      {fn}           Clear session and redirect to login.
+ *   - user              {object|null}  Authenticated user object.
+ *   - token             {string|null}  Session token string.
+ *   - isLoading         {boolean}      True while restoring session from storage.
+ *   - isAuthenticated   {boolean}      Derived: true when token is present.
+ *   - signIn(email, pw) {fn}          Validate credentials, persist session.
+ *                                      Returns { error } on failure.
+ *   - logout()          {fn}          Clear session and reset state.
  */
 
 import { createContext, useContext, useState, useEffect } from 'react'
-import { STORAGE_KEYS } from '@/constants'
+import { STORAGE_KEYS, MOCK_USERS } from '@/constants'
 
 // ─── Context ─────────────────────────────────────────────────────────────────
 
 const AuthContext = createContext(null)
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+/**
+ * Generate a deterministic mock token for a user.
+ * Not cryptographically secure — demo only.
+ */
+function generateMockToken(userId) {
+  return `mock_token_${userId}_${Date.now()}`
+}
 
 // ─── Provider ────────────────────────────────────────────────────────────────
 
@@ -32,17 +43,51 @@ export function AuthProvider({ children }) {
     const storedUser = localStorage.getItem(STORAGE_KEYS.USER)
 
     if (storedToken && storedUser) {
-      setToken(storedToken)
-      setUser(JSON.parse(storedUser))
+      try {
+        setToken(storedToken)
+        setUser(JSON.parse(storedUser))
+      } catch {
+        // Corrupted storage — clear it.
+        localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
+        localStorage.removeItem(STORAGE_KEYS.USER)
+      }
     }
 
     setIsLoading(false)
   }, [])
 
   /**
+   * Validate credentials against MOCK_USERS and persist session.
+   *
+   * @param {string}  email       - User's email address.
+   * @param {string}  password    - User's password.
+   * @param {boolean} rememberMe  - If false, session is still persisted
+   *                                (extended to a real session-storage
+   *                                implementation in production).
+   * @returns {{ error: string | null }}
+   */
+  const signIn = (email, password) => {
+    const match = MOCK_USERS[email.toLowerCase().trim()]
+
+    if (!match || match.password !== password) {
+      return { error: 'Invalid email or password. Please try again.' }
+    }
+
+    // Strip the password before storing.
+    const { password: _pw, ...safeUser } = match
+    const newToken = generateMockToken(safeUser.id)
+
+    localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, newToken)
+    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(safeUser))
+    setToken(newToken)
+    setUser(safeUser)
+
+    return { error: null }
+  }
+
+  /**
    * Persist a new auth session to state and localStorage.
-   * @param {string} newToken - JWT token from login response.
-   * @param {object} newUser  - User object from login response.
+   * Used by external callers (e.g. OAuth, API login responses).
    */
   const login = (newToken, newUser) => {
     localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, newToken)
@@ -66,6 +111,7 @@ export function AuthProvider({ children }) {
     token,
     isLoading,
     isAuthenticated: !!token,
+    signIn,
     login,
     logout,
   }

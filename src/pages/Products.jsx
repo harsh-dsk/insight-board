@@ -2,12 +2,23 @@
  * pages/Products.jsx
  *
  * Product listing page (protected).
- * Displays a searchable, filterable, paginated grid of products.
- * Data is fetched via useProducts() hook from DummyJSON.
- *
- * TODO: Implement UI with <ProductGrid />, <ProductFilters />, <Pagination />.
+ * Skeleton placeholder; full implementation (grid, filters, pagination) to follow.
  */
 
 export default function Products() {
-  return null
+  return (
+    <div className="space-y-6">
+      <div className="space-y-1">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          Products
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Browse and manage your product catalog.
+        </p>
+      </div>
+      <div className="rounded-lg border border-border bg-card p-10 text-center text-muted-foreground text-sm">
+        Product grid coming soon.
+      </div>
+    </div>
+  )
 }
