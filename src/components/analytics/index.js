@@ -2,6 +2,10 @@
  * components/analytics/index.js
  *
  * Barrel export for analytics-specific components.
- *
- * TODO: Export <CategoryChart />, <PriceRangeChart />, <RatingChart />.
  */
+
+export { KPICard } from './KPICard'
+export { KPIGrid } from './KPIGrid'
+export { CategoryPieChart } from './CategoryPieChart'
+export { InventoryBarChart } from './InventoryBarChart'
+export { AnalyticsSkeleton } from './AnalyticsSkeleton'

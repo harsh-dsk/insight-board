@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom'
 import { Eye, ToggleLeft, ToggleRight } from 'lucide-react'
 
 import { formatCurrency } from '@/utils'
-import { ROLES } from '@/constants'
+import { ROLES } from '@/constants/app'
 import { useAuth } from '@/context'
 
 import { Badge } from '@/components/ui/badge'
@@ -130,11 +130,7 @@ export const ProductTableRow = memo(function ProductTableRow({ product }) {
               Click to {published ? 'hide' : 'publish'}
             </TooltipContent>
           </Tooltip>
-        ) : (
-          <Badge variant={published ? 'outline' : 'secondary'} className="text-xs">
-            {published ? 'Published' : 'Hidden'}
-          </Badge>
-        )}
+        ) : null}
       </TableCell>
 
       {/* Actions */}

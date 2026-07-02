@@ -35,6 +35,7 @@ const Products = lazy(() => import('@/pages/Products'))
 const ProductDetails = lazy(() => import('@/pages/ProductDetails'))
 const Analytics = lazy(() => import('@/pages/Analytics'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
+const ErrorPage = lazy(() => import('@/pages/ErrorPage'))
 
 // Simple loader wrapper helper
 function withSuspense(Component, fullscreen = false) {
@@ -62,10 +63,12 @@ const router = createBrowserRouter([
     // Redirect root to /dashboard
     path: ROUTES.ROOT,
     element: <Navigate to={ROUTES.DASHBOARD} replace />,
+    errorElement: withSuspense(ErrorPage, true),
   },
   {
     // Public-only route — authenticated users are redirected to /dashboard
     element: <PublicOnlyRoute />,
+    errorElement: withSuspense(ErrorPage, true),
     children: [
       { path: ROUTES.LOGIN, element: withSuspense(Login, true) },
     ],
@@ -73,6 +76,7 @@ const router = createBrowserRouter([
   {
     // All authenticated routes nested under ProtectedRoute
     element: <ProtectedRoute />,
+    errorElement: withSuspense(ErrorPage, true),
     children: [
       {
         // Shared layout (sidebar, header, etc.)
@@ -95,6 +99,7 @@ const router = createBrowserRouter([
   {
     path: ROUTES.NOT_FOUND,
     element: withSuspense(NotFound),
+    errorElement: withSuspense(ErrorPage, true),
   },
 ])
 

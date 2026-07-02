@@ -16,6 +16,8 @@ import {
   searchProducts,
   getProductsByCategory,
 } from '@/services'
+import { useAuth } from '@/context'
+import { ROLES } from '@/constants/app'
 
 /** Sort a product array by the given sort key. */
 function applySort(products, sort) {
@@ -33,11 +35,11 @@ function applySort(products, sort) {
 
 export function useProductsQuery(filters) {
   const { search, category, sort, minRating, page, limit } = filters
+  const { user } = useAuth()
 
   const skip = (page - 1) * limit
 
   const [rawProducts, setRawProducts] = useState([])
-  const [total, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -61,7 +63,6 @@ export function useProductsQuery(filters) {
     } catch (err) {
       setError(err.response?.data?.message ?? 'Failed to load products. Please try again.')
       setRawProducts([])
-      setTotal(0)
     } finally {
       setIsLoading(false)
     }
@@ -71,25 +72,32 @@ export function useProductsQuery(filters) {
     fetchProducts()
   }, [fetchProducts])
 
-  // Apply client-side rating filter and sort, then paginate.
-  const { products, filteredTotal } = useMemo(() => {
-    let filtered = rawProducts
+  // Derive the user's admin status for visibility filtering.
+  const isAdmin = user?.role === ROLES.ADMIN
 
-    if (minRating) {
-      filtered = filtered.filter((p) => p.rating >= Number(minRating))
+  // Apply RBAC visibility filter, rating filter, sort, and pagination.
+  const { products, filteredTotal } = useMemo(() => {
+    let visible = rawProducts
+
+    // RBAC: Non-admins cannot see hidden products
+    if (!isAdmin) {
+      visible = rawProducts.filter((p) => {
+        const status = localStorage.getItem(`insightboard_product_status_${p.id}`)
+        return status !== 'hidden'
+      })
     }
 
-    const sorted = applySort(filtered, sort)
+    // Rating filter
+    if (minRating) {
+      visible = visible.filter((p) => p.rating >= Number(minRating))
+    }
+
+    const sorted = applySort(visible, sort)
     const filteredTotal = sorted.length
     const paginated = sorted.slice(skip, skip + limit)
 
     return { products: paginated, filteredTotal }
-  }, [rawProducts, minRating, sort, skip, limit])
-
-  // Sync total after filtering
-  useEffect(() => {
-    setTotal(filteredTotal)
-  }, [filteredTotal])
+  }, [rawProducts, minRating, sort, skip, limit, isAdmin])
 
   return { products, total: filteredTotal, isLoading, error, refetch: fetchProducts }
 }

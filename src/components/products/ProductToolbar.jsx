@@ -87,6 +87,7 @@ export const ProductToolbar = memo(function ProductToolbar({
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="pl-9 pr-9 h-9"
+            aria-label="Search products by name or brand"
           />
           {searchInput && (
             <button
@@ -130,7 +131,7 @@ export const ProductToolbar = memo(function ProductToolbar({
 
         {/* Category */}
         <Select value={category || '__all__'} onValueChange={(v) => setFilter('category', v === '__all__' ? '' : v)}>
-          <SelectTrigger className="h-8 w-[165px] text-xs">
+          <SelectTrigger className="h-8 w-[165px] text-xs" aria-label="Filter products by category">
             <SelectValue placeholder="All categories" />
           </SelectTrigger>
           <SelectContent>
@@ -145,7 +146,7 @@ export const ProductToolbar = memo(function ProductToolbar({
 
         {/* Min Rating */}
         <Select value={minRating || ''} onValueChange={(v) => setFilter('minRating', v)}>
-          <SelectTrigger className="h-8 w-[130px] text-xs">
+          <SelectTrigger className="h-8 w-[130px] text-xs" aria-label="Filter products by minimum rating">
             <SelectValue placeholder="Any rating" />
           </SelectTrigger>
           <SelectContent>
@@ -159,7 +160,7 @@ export const ProductToolbar = memo(function ProductToolbar({
 
         {/* Sort */}
         <Select value={sort} onValueChange={(v) => setFilter('sort', v)}>
-          <SelectTrigger className="h-8 w-[170px] text-xs">
+          <SelectTrigger className="h-8 w-[170px] text-xs" aria-label="Sort products by option">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -173,7 +174,7 @@ export const ProductToolbar = memo(function ProductToolbar({
 
         {/* Items per page */}
         <Select value={String(limit)} onValueChange={(v) => setFilter('limit', Number(v))}>
-          <SelectTrigger className="h-8 w-[130px] text-xs">
+          <SelectTrigger className="h-8 w-[130px] text-xs" aria-label="Number of products shown per page">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

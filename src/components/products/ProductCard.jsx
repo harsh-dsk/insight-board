@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom'
 import { Eye, ToggleLeft, ToggleRight } from 'lucide-react'
 
 import { formatCurrency, truncate } from '@/utils'
-import { ROLES } from '@/constants'
+import { ROLES } from '@/constants/app'
 import { useAuth } from '@/context'
 import { cn } from '@/lib/utils'
 
@@ -98,7 +98,7 @@ export const ProductCard = memo(function ProductCard({ product }) {
 
         {/* Footer: status toggle + view */}
         <div className="flex items-center justify-between pt-2 border-t border-border mt-1">
-          {isAdmin ? (
+          {isAdmin && (
             <button
               onClick={handleToggle}
               className={cn(
@@ -114,10 +114,6 @@ export const ProductCard = memo(function ProductCard({ product }) {
               )}
               {published ? 'Published' : 'Hidden'}
             </button>
-          ) : (
-            <Badge variant="outline" className="text-[10px] font-normal">
-              {published ? 'Published' : 'Hidden'}
-            </Badge>
           )}
 
           <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1" asChild>

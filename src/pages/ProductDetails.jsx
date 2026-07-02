@@ -8,12 +8,14 @@
  *   - Reviews section below
  */
 
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, Navigate } from 'react-router-dom'
 import { ArrowLeft, Tag, ShieldCheck, RotateCcw, Package, Truck } from 'lucide-react'
 
 import { useProduct } from '@/hooks'
+import { useAuth } from '@/context'
 import { formatCurrency, formatPercentage } from '@/utils'
 import { ROUTES } from '@/constants'
+import { ROLES } from '@/constants/app'
 
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -66,6 +68,18 @@ function StockIndicator({ stock, availabilityStatus }) {
 export default function ProductDetails() {
   const { id } = useParams()
   const { product, isLoading, error, refetch } = useProduct(id)
+  const { user } = useAuth()
+
+  const isAdmin = user?.role === ROLES.ADMIN
+
+  // RBAC: redirect non-admin users away from hidden products
+  const isHidden = product
+    ? localStorage.getItem(`insightboard_product_status_${product.id}`) === 'hidden'
+    : false
+
+  if (isHidden && !isAdmin) {
+    return <Navigate to={ROUTES.PRODUCTS} replace />
+  }
 
   if (isLoading) {
     return (

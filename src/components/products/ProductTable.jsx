@@ -28,6 +28,7 @@ const COLUMNS = [
 ]
 
 export const ProductTable = memo(function ProductTable({ products }) {
+  
   return (
     <div className="rounded-lg border border-border overflow-hidden">
       <Table>
