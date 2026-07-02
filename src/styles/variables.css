@@ -1,0 +1,21 @@
+/**
+ * styles/variables.css
+ *
+ * Custom CSS variables / design tokens for InsightBoard.
+ * These extend (or override) the defaults injected by shadcn/ui in index.css.
+ *
+ * Usage: imported once at the top of index.css after @import "tailwindcss".
+ *
+ * TODO: Define brand colors, spacing scale, typography, and animation tokens.
+ */
+
+:root {
+  /* ─── Brand Colors ──────────────────────────────────────────────── */
+  /* TODO: Define --color-brand-*, --color-accent-*, etc. */
+
+  /* ─── Typography ────────────────────────────────────────────────── */
+  /* TODO: Define --font-sans, --font-mono, --font-heading */
+
+  /* ─── Spacing ───────────────────────────────────────────────────── */
+  /* TODO: Define custom spacing tokens if needed beyond Tailwind defaults */
+}
