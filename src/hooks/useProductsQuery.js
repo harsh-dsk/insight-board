@@ -43,8 +43,10 @@ export function useProductsQuery(filters) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const fetchProducts = useCallback(async () => {
-    setIsLoading(true)
+  const fetchProducts = useCallback(async (isSilent = false) => {
+    if (!isSilent) {
+      setIsLoading(true)
+    }
     setError(null)
     try {
       let data
@@ -64,12 +66,21 @@ export function useProductsQuery(filters) {
       setError(err.response?.data?.message ?? 'Failed to load products. Please try again.')
       setRawProducts([])
     } finally {
-      setIsLoading(false)
+      if (!isSilent) {
+        setIsLoading(false)
+      }
     }
   }, [search, category])
 
   useEffect(() => {
     fetchProducts()
+  }, [fetchProducts])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchProducts(true)
+    }, 30000)
+    return () => clearInterval(interval)
   }, [fetchProducts])
 
   // Derive the user's admin status for visibility filtering.

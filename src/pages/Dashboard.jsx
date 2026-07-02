@@ -39,8 +39,10 @@ export default function Dashboard() {
 
   const isAdmin = user?.role === ROLES.ADMIN
 
-  const fetchDashboardData = useCallback(async () => {
-    setIsLoading(true)
+  const fetchDashboardData = useCallback(async (isSilent = false) => {
+    if (!isSilent) {
+      setIsLoading(true)
+    }
     setError(null)
     try {
       // Fetch up to 150 items to get catalog-wide stats, mirroring Analytics page logic
@@ -50,12 +52,21 @@ export default function Dashboard() {
       setError(err.response?.data?.message ?? 'Failed to load dashboard data. Please try again.')
       setProducts([])
     } finally {
-      setIsLoading(false)
+      if (!isSilent) {
+        setIsLoading(false)
+      }
     }
   }, [])
 
   useEffect(() => {
     fetchDashboardData()
+  }, [fetchDashboardData])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchDashboardData(true)
+    }, 30000)
+    return () => clearInterval(interval)
   }, [fetchDashboardData])
 
   // Filter products based on user role (RBAC)

@@ -28,8 +28,10 @@ export default function Analytics() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const fetchAnalyticsData = useCallback(async () => {
-    setIsLoading(true)
+  const fetchAnalyticsData = useCallback(async (isSilent = false) => {
+    if (!isSilent) {
+      setIsLoading(true)
+    }
     setError(null)
     try {
       // Fetch up to 150 items to calculate comprehensive catalog stats
@@ -39,12 +41,21 @@ export default function Analytics() {
       setError(err.response?.data?.message ?? 'Failed to load catalog data. Please try again.')
       setProducts([])
     } finally {
-      setIsLoading(false)
+      if (!isSilent) {
+        setIsLoading(false)
+      }
     }
   }, [])
 
   useEffect(() => {
     fetchAnalyticsData()
+  }, [fetchAnalyticsData])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchAnalyticsData(true)
+    }, 30000)
+    return () => clearInterval(interval)
   }, [fetchAnalyticsData])
 
   return (
